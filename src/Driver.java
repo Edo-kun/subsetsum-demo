@@ -16,11 +16,11 @@
 public class Driver {
     public static void main(String[] args) throws Exception {
         // tests
-        //test("Exhaustive Search");
+        test("Exhaustive Search", new ExhaustiveSubsetSum());
 
     }
 
-    private static void test(String version) throws Exception {
+    private static void test(String version, SubsetSum tester) throws Exception {
         // warm-up
 
         // compute

@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * File: Driver.java
  * @author Shawn Jiang
@@ -12,16 +9,20 @@ import java.util.List;
  * Date: April 15 2017
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Class that demonstrates exhaustive search to find subset sum of a multiset*/
-public class ExhaustiveSubsetSum {
+public class ExhaustiveSubsetSum implements SubsetSum{
     /**
      * Returns true if a subset of list amounts to the target sum
      * @param list the list of integers
      * @param targetSum the target sum of the subsets
      * @return
      */
-    private boolean containsSubsetSum(List<Integer> list, int targetSum) {
-        // get sublists
+    @Override
+    public boolean containsSubsetSum(List<Integer> list, int targetSum) {
+        // get 2^n sublists
         ArrayList<ArrayList<Integer>> sublists = getSublists(list, list.size()-1);
         // calculate sums of each sublist
         for (ArrayList<Integer> sublist : sublists) {
@@ -30,7 +31,6 @@ public class ExhaustiveSubsetSum {
                 sum += num.intValue();
             }
             if (sum == targetSum) {
-                System.out.println(sublist);
                 return true;
             }
         }
