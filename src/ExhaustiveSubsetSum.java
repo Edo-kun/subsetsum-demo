@@ -34,6 +34,7 @@ public class ExhaustiveSubsetSum implements SubsetSum{
                 return true;
             }
         }
+
         return false;
     }
 
@@ -44,6 +45,8 @@ public class ExhaustiveSubsetSum implements SubsetSum{
      * @return
      */
     private ArrayList<ArrayList<Integer>> getSublists(List<Integer> list, int index) {
+        // if i == 0 -> return {},{list.get(0)}
+        // else i > 0 -> return getSublists(list, i - 1), (setSublists(list, i -1) + list.get(i) for every sublist)
         ArrayList<ArrayList<Integer>> subsets = new ArrayList();
         // base case
         if(index == 0 ) {
@@ -68,7 +71,7 @@ public class ExhaustiveSubsetSum implements SubsetSum{
     public static void main(String args[]) {
         ExhaustiveSubsetSum exhaustiveSubsetSum = new ExhaustiveSubsetSum();
         ArrayList<Integer> list = new ArrayList<>();
-        for(int i = 1; i < 10; i++) {
+        for(int i = 1; i < 11; i++) {
             list.add(new Integer(i));
         }
         System.out.println(exhaustiveSubsetSum.containsSubsetSum(list, 15));

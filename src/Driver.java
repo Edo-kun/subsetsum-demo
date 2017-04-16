@@ -9,6 +9,8 @@
  * Date: April 15 2017
  */
 
+import java.util.ArrayList;
+
 /**
  * A driver for testing.
  */
@@ -16,16 +18,20 @@
 public class Driver {
     public static void main(String[] args) throws Exception {
         // tests
-        test("Exhaustive Search", new ExhaustiveSubsetSum());
+        testExact("Exhaustive Search", new ExhaustiveSubsetSum());
+        testExact("Dynamic Search", new DynamicSubsetSum());
 
     }
 
-    private static void test(String version, SubsetSum tester) throws Exception {
+    private static void testExact(String version, SubsetSum tester) throws Exception {
         // warm-up
-
+        ArrayList<Integer> list = new ArrayList<>();
+        for(int i = 1; i < 23; i++) {
+            list.add(new Integer(i));
+        }
         // compute
         Timer.start();
-        //---
+        tester.containsSubsetSum(list, 100);
         Timer.stop();
 
         // output the results
