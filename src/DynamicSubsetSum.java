@@ -20,6 +20,7 @@ public class DynamicSubsetSum implements SubsetSum {
         if (targetSum == 0) {
             return true;
         }
+
         Collections.sort(list);
         int n = list.size();
         int k = list.stream().mapToInt(Integer::intValue).sum();

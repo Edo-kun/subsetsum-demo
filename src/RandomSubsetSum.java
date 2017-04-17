@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class RandomSubsetSum {
+public class RandomSubsetSum implements ApproxSubsetSum{
 
     /**
      * Randomly finds subsets to acquire approximate distance from targetSum

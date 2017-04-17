@@ -14,22 +14,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class GreedySubsetSum {
+public class GreedySubsetSum implements ApproxSubsetSum{
     /**
      * Finds Approximation of target sum through the Greedy algorithm
      * @param list the list
      * @param targetSum desired sum
      * @return
      */
-    public Long containsSubsetSum(List<Long> list, Long targetSum) {
+    public Long containsSubsetSum(List<Long> list, Long targetSum, int iterations) {
         ArrayList<Long> subset = new ArrayList<>();
-        Collections.sort(list);
-        Collections.reverse(list);
+        List<Long> baseList = new ArrayList(list);
+        Collections.sort(baseList);
+        Collections.reverse(baseList);
         Long sum = new Long(0);
-        for (int i = 0; i < list.size(); i++) {
-            if (sum + list.get(i) <= targetSum) {
-                subset.add(list.get(i));
-                sum += list.get(i);
+        for (int i = 0; i < baseList.size(); i++) {
+            if (sum + baseList.get(i) <= targetSum) {
+                subset.add(baseList.get(i));
+                sum += baseList.get(i);
             }
         }
         return targetSum - sum;
@@ -43,6 +44,6 @@ public class GreedySubsetSum {
         for(int i = 0; i < 100; i++) {
             list.add(((Double)(random.nextDouble() * l)).longValue());
         }
-        System.out.println(greedySubsetSum.containsSubsetSum(list, ((Double)(25 * l)).longValue()));
+        System.out.println(greedySubsetSum.containsSubsetSum(list, ((Double)(25 * l)).longValue(), 1));
     }
 }
