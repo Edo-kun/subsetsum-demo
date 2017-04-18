@@ -22,15 +22,11 @@ public class ExhaustiveSubsetSum implements SubsetSum{
      */
     @Override
     public boolean containsSubsetSum(List<Integer> list, int targetSum) {
-        // get 2^n sublists
-        ArrayList<ArrayList<Integer>> sublists = getSublists(list, list.size()-1);
+        // get max 2^n sums
+        ArrayList<Integer> sums = getSums(list, list.size()-1, targetSum);
         // calculate sums of each sublist
-        for (ArrayList<Integer> sublist : sublists) {
-            int sum = 0;
-            for (Integer num : sublist) {
-                sum += num.intValue();
-            }
-            if (sum == targetSum) {
+        for (Integer sum : sums) {
+            if (sum.intValue() == targetSum) {
                 return true;
             }
         }
@@ -44,28 +40,29 @@ public class ExhaustiveSubsetSum implements SubsetSum{
      * @param index the index of the int to add to the clone of the list
      * @return
      */
-    private ArrayList<ArrayList<Integer>> getSublists(List<Integer> list, int index) {
+    private ArrayList<Integer> getSums(List<Integer> list, int index, int target) {
         // if i == 0 -> return {},{list.get(0)}
-        // else i > 0 -> return getSublists(list, i - 1), (setSublists(list, i -1) + list.get(i) for every sublist)
-        ArrayList<ArrayList<Integer>> subsets = new ArrayList();
+        // else i > 0 -> return getSums(list, i - 1), (getSums(list, i -1) + list.get(i) for every sum)
+        ArrayList<Integer> subSums = new ArrayList();
         // base case
-        if(index == 0 ) {
-            subsets.add(new ArrayList());
-            ArrayList<Integer> base = new ArrayList<>();
-            base.add(new Integer(list.get(0)));
-            subsets.add(base);
+        if(index <= 0 ) {
+            subSums.add(0);
+            subSums.add(new Integer(list.get(0)));
         } else {
-            // calculate sublists of n-1,
-            // make a copy and add the integer at index of list to every sublist of the copy,
-            // add every sublist in the copy back to the original sublist
-            subsets = getSublists(list, index-1);
-            ArrayList<ArrayList<Integer>> copy = getSublists(list, index-1);
-            for(ArrayList<Integer> sub : copy) {
-                sub.add(list.get(index));
-                subsets.add(sub);
+            // calculate subSums of n-1,
+            // make a copy and add the integer to every subSum of the copy,
+            // add every subSum in the copy back to the original subSum list
+            subSums = getSums(list, index-1, target);
+            ArrayList<Integer> copy = getSums(list, index-1, target);
+            for (int i = 0; i < copy.size(); i++) {
+                int sum = copy.get(i) + list.get(index);
+                //only add to subsums if sum does not exceed target (pruning)
+                if (sum <= target) {
+                    subSums.add(copy.get(i) + list.get(index));
+                }
             }
         }
-        return subsets;
+        return subSums;
     }
 
     public static void main(String args[]) {
