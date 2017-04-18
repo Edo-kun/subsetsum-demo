@@ -21,29 +21,87 @@ public class Driver {
     public static void main(String[] args) throws Exception {
         // tests exact
         System.out.println("|------------------------Exact Algorithms--------------------------|");
-        int[] valueLimits = {6, 11, 16, 21};
-        for (int i = 0; i < valueLimits.length; i++) {
-            testExact(new ExhaustiveSubsetSum(), valueLimits[i]);
-        }
-        valueLimits = new int[] {26, 51, 101, 201, 401, 1001};
-        for (int i = 0; i < valueLimits.length; i++) {
-            testExact(new DynamicSubsetSum(), valueLimits[i]);
-        }
+        timeExactAlgorithms();
         // test approximate algorithms with varying inputs
-        System.out.println("|-------------------------Varying Approx---------------------------|");
+        System.out.println("|------------------------Approx Algorithms--------------------------|");
+        timeApproxAlgorithms();
+        testApproxAccuracy();
+    }
 
-        valueLimits = new int[] {1000, 2000, 5000, 10000};
+    private static void timeExactAlgorithms() throws Exception{
+        // test exhaustive algorithm
+        int[] valueLimits = {6, 11, 16};
+        for (int i = 0; i < valueLimits.length; i++) {
+            ArrayList<Integer> list = new ArrayList<>();
+            for (int j = 1; j < valueLimits[i]; j++) {
+                list.add(new Integer(i));
+            }
+            System.out.println("---Testing for " + (valueLimits[i]-1) + " values---");
+            testExact(new ExhaustiveSubsetSum(), list);
+        }
+        // test dynamic subset sum
+        valueLimits = new int[] {1001, 2001, 5001, 10001};
+        for (int i = 0; i < valueLimits.length; i++) {
+            ArrayList<Integer> list = new ArrayList<>();
+            for (int j = 1; j < valueLimits[i]; j++) {
+                list.add(new Integer(i));
+            }
+            System.out.println("---Testing for " + (valueLimits[i]-1) + " values---");
+            testExact(new DynamicSubsetSum(), list);
+        }
+    }
+
+    /**
+     * Tests exact versions of the subset problem
+     * @param tester
+     * @throws Exception
+     */
+    private static void testExact(SubsetSum tester, List<Integer> list) throws Exception {
+        // warm-up
+        tester.containsSubsetSum(list, list.size()*2);
+        // compute
+        Timer.start();
+        tester.containsSubsetSum(list, list.size()*2);
+        Timer.stop();
+
+        // output the results
+        System.out.println(tester.getClass().getName() +" ran at " + Timer.getRuntime() + "ms");
+    }
+
+    private static void timeApproxAlgorithms() {
+        int[] valueLimits = new int[] {10000, 20000, 50000, 100000};
+        int[] iterationLimits = new int[] {10000, 20000, 50000, 100000};
         Random random = new Random();
 
-        for (int i = 1; i < valueLimits.length; i++) {
+        // test list size for input variation
+        for (int i = 0; i < valueLimits.length; i++) {
             ArrayList<Long> list = new ArrayList<>();
             for (int j = 0; j < valueLimits[i]; j++) {
-                list.add(new Long(random.nextInt(10000)));
+                list.add(new Long(random.nextInt(valueLimits[i])));
             }
-            testApprox(new GreedySubsetSum(), list, new Long(10000), 100, true);
-            testApprox(new RandomSubsetSum(), list, new Long(10000), 100, true);
-            testApprox(new HillClimbingSubsetSum(), list, new Long(10000), 100, true);
-            testApprox(new SimAnnealSubsetSum(), list, new Long(10000), 100, true);
+            int repetitions = 100;
+            Long target = new Long(valueLimits[i]*2);
+            System.out.println("---Testing for " + (valueLimits[i]) + " values at " + repetitions + "iterations---");
+            testApprox(new GreedySubsetSum(), list, target, repetitions, true);
+            testApprox(new RandomSubsetSum(), list, target, repetitions, true);
+            testApprox(new HillClimbingSubsetSum(), list, target, repetitions, true);
+            testApprox(new SimAnnealSubsetSum(), list, target, repetitions, true);
+        }
+
+        // test iterations for input variations
+        int fixedSize = 10000;
+        for (int i = 0; i < iterationLimits.length; i++) {
+            ArrayList<Long> list = new ArrayList<>();
+            for (int j = 0; j < valueLimits[i]; j++) {
+                list.add(new Long(random.nextInt(fixedSize)));
+            }
+
+            Long target = new Long(fixedSize * 2);
+            System.out.println("---Testing for " + fixedSize + " values at " + iterationLimits[i] + "iterations---");
+            testApprox(new GreedySubsetSum(), list, target, iterationLimits[i], true);
+            testApprox(new RandomSubsetSum(), list, target, iterationLimits[i], true);
+            testApprox(new HillClimbingSubsetSum(), list, target, iterationLimits[i], true);
+            testApprox(new SimAnnealSubsetSum(), list, target, iterationLimits[i], true);
         }
     }
 
@@ -75,33 +133,6 @@ public class Driver {
     }
 
     /**
-     * Tests exact versions of the subset problem
-     * @param tester
-     * @throws Exception
-     */
-    private static void testExact(SubsetSum tester, int valueLimit) throws Exception {
-        // warm-up
-        ArrayList<Integer> list = new ArrayList<>();
-        for (int i = 1; i < valueLimit; i++) {
-            list.add(new Integer(i));
-        }
-
-        // compute
-        Timer.start();
-        tester.containsSubsetSum(list, 10);
-        Timer.stop();
-
-        // output the results
-        System.out.println("--------" + tester.getClass().getName() + "---------- for " +(valueLimit-1)+ " values");
-
-        // output the time required to run
-        System.out.println("Time: " + Timer.getRuntime() + "ms");
-
-        System.out.println();
-
-    }
-
-    /**
      * Method for testing approximations
      * @param algorithm the approx algorithm
      * @param list the list of longs
@@ -115,18 +146,20 @@ public class Driver {
                                    Long target,
                                    int iterations,
                                    boolean timing) {
+        // warmup
+
+        algorithm.containsSubsetSum(list, target, iterations);
         if (timing) {
             Timer.start();
         }
         Long l = algorithm.containsSubsetSum(list, target, iterations);
         if (timing) {
             Timer.stop();
-            System.out.println("--------" + algorithm.getClass().getName() + "---------- for " +list.size() + " values");
+            System.out.println(algorithm.getClass().getName() + "ran at " + Timer.getRuntime() + "ms");
 
             // output the time required to run
             System.out.println("Time: " + Timer.getRuntime() + "ms");
 
-            System.out.println();
         }
         return l;
     }
