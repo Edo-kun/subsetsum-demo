@@ -23,7 +23,7 @@ public class DynamicSubsetSum implements SubsetSum {
 
         Collections.sort(list);
         int n = list.size();
-        int k = list.stream().mapToInt(Integer::intValue).sum();
+        int k = targetSum;
         map = new boolean[n][k];
 
         for (int i = 0; i < k; i++) {

@@ -25,12 +25,13 @@ public class Driver {
         // test approximate algorithms with varying inputs
         System.out.println("|------------------------Approx Algorithms--------------------------|");
         timeApproxAlgorithms();
+        System.out.println("|-----------------------Accuracy of Approx-------------------------|");
         testApproxAccuracy();
     }
 
     private static void timeExactAlgorithms() throws Exception{
         // test exhaustive algorithm
-        int[] valueLimits = {6, 11, 16};
+        int[] valueLimits = {16, 21, 26};
         for (int i = 0; i < valueLimits.length; i++) {
             ArrayList<Integer> list = new ArrayList<>();
             for (int j = 1; j < valueLimits[i]; j++) {
@@ -40,7 +41,7 @@ public class Driver {
             testExact(new ExhaustiveSubsetSum(), list);
         }
         // test dynamic subset sum
-        valueLimits = new int[] {1001, 2001, 5001, 10001};
+        valueLimits = new int[] {2501, 5001, 10001, 20001};
         for (int i = 0; i < valueLimits.length; i++) {
             ArrayList<Integer> list = new ArrayList<>();
             for (int j = 1; j < valueLimits[i]; j++) {
@@ -58,7 +59,7 @@ public class Driver {
      */
     private static void testExact(SubsetSum tester, List<Integer> list) throws Exception {
         // warm-up
-        tester.containsSubsetSum(list, list.size()*2);
+
         // compute
         Timer.start();
         tester.containsSubsetSum(list, list.size()*2);
@@ -70,7 +71,7 @@ public class Driver {
 
     private static void timeApproxAlgorithms() {
         int[] valueLimits = new int[] {10000, 20000, 50000, 100000};
-        int[] iterationLimits = new int[] {10000, 20000, 50000, 100000};
+        int[] iterationLimits = new int[] {1000, 2000, 5000};
         Random random = new Random();
 
         // test list size for input variation
@@ -81,7 +82,7 @@ public class Driver {
             }
             int repetitions = 100;
             Long target = new Long(valueLimits[i]*2);
-            System.out.println("---Testing for " + (valueLimits[i]) + " values at " + repetitions + "iterations---");
+            System.out.println("---Testing for " + (valueLimits[i]) + " values at " + repetitions + " iterations---");
             testApprox(new GreedySubsetSum(), list, target, repetitions, true);
             testApprox(new RandomSubsetSum(), list, target, repetitions, true);
             testApprox(new HillClimbingSubsetSum(), list, target, repetitions, true);
@@ -97,7 +98,7 @@ public class Driver {
             }
 
             Long target = new Long(fixedSize * 2);
-            System.out.println("---Testing for " + fixedSize + " values at " + iterationLimits[i] + "iterations---");
+            System.out.println("---Testing for " + fixedSize + " values at " + iterationLimits[i] + " iterations---");
             testApprox(new GreedySubsetSum(), list, target, iterationLimits[i], true);
             testApprox(new RandomSubsetSum(), list, target, iterationLimits[i], true);
             testApprox(new HillClimbingSubsetSum(), list, target, iterationLimits[i], true);
@@ -129,7 +130,19 @@ public class Driver {
             largeInputResults.get(2).add(testApprox(new HillClimbingSubsetSum(), list, targetSum, 1000, false));
             largeInputResults.get(3).add(testApprox(new SimAnnealSubsetSum(), list, targetSum, 1000, false));
         }
-        System.out.println(largeInputResults);
+        System.out.println("Greedy Sum Results");
+        System.out.println(largeInputResults.get(0));
+        System.out.println(largeInputResults.get(0).stream().mapToLong(Long::longValue).sum()/largeInputResults.get(0).size());
+        System.out.println("Random Results");
+        System.out.println(largeInputResults.get(1));
+        System.out.println(largeInputResults.get(1).stream().mapToLong(Long::longValue).sum()/largeInputResults.get(1).size());
+        System.out.println("Hill Climbing Results");
+        System.out.println(largeInputResults.get(2));
+        System.out.println(largeInputResults.get(2).stream().mapToLong(Long::longValue).sum()/largeInputResults.get(2).size());
+        System.out.println("Sim Anneal Results");
+        System.out.println(largeInputResults.get(3));
+        System.out.println(largeInputResults.get(3).stream().mapToLong(Long::longValue).sum()/largeInputResults.get(3).size());
+
     }
 
     /**
@@ -155,10 +168,7 @@ public class Driver {
         Long l = algorithm.containsSubsetSum(list, target, iterations);
         if (timing) {
             Timer.stop();
-            System.out.println(algorithm.getClass().getName() + "ran at " + Timer.getRuntime() + "ms");
-
-            // output the time required to run
-            System.out.println("Time: " + Timer.getRuntime() + "ms");
+            System.out.println(algorithm.getClass().getName() + " ran at " + Timer.getRuntime() + "ms");
 
         }
         return l;

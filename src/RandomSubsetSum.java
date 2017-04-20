@@ -25,13 +25,19 @@ public class RandomSubsetSum implements ApproxSubsetSum{
     public Long containsSubsetSum(List<Long> list, Long targetSum, int iterations) {
         Random random = new Random();
         Long min = Long.MAX_VALUE;
+        //create a copy of the given list (so you dont modify it)
+        ArrayList<Long> baseList = new ArrayList(list);
         for (int i = 0; i < iterations; i++) {
-            ArrayList<Long> baseList = new ArrayList(list);
+            ArrayList<Integer> indices = new ArrayList();
             ArrayList<Long> tempSubset= new ArrayList();
             int randVal = random.nextInt(baseList.size());
             for (int j = 0; j < randVal; j++) {
                 int randIndex = random.nextInt(baseList.size());
-                tempSubset.add(baseList.remove(randIndex));
+                while (indices.contains(randIndex)) {
+                    randIndex = random.nextInt(baseList.size());
+                }
+                tempSubset.add(baseList.get(randIndex));
+                indices.add(randIndex);
             }
             Long tempMin = Math.abs(targetSum - tempSubset.stream().mapToLong(Long::longValue).sum());
             if ( tempMin < min) {
